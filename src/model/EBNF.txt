@@ -1,0 +1,9 @@
+RelativeDate = Spaces 'now' Spaces {('-' | '+' | '/') Spaces [Int Spaces] Unit Spaces}
+Spaces =  {' ' | '\t' | '\r' | '\n'}
+Int = '0'...'9'{'0'...'9'}
+Unit = 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'Q' | 'y'
+
+1. after division only int = 1 allowed including 001 - we agree
+2. spaces before 'now' not allowed in Gravity/Grafana - we allow
+3. '+' and '-' are not allowed after '/' in Gravity/Grafana - we allow
+4. Gravity/Grafana allows spaces between digits of a number - we disallow

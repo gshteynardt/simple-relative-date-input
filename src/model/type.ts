@@ -15,3 +15,9 @@ export type Preset = {
   title: string;
   value: string; // relative expression
 };
+
+export type UseSimpleRelativeDateStateOptions = {
+  value?: Value | null;
+  defaultValue?: Value | null;
+  onUpdate?: (value: Value | null) => void;
+};

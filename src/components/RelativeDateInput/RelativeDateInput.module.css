@@ -1,0 +1,74 @@
+.RelativeDateInput {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: fit-content;
+    position: relative;
+}
+
+.FxButton {
+    flex-shrink: 0;
+}
+
+.Input {
+    flex: 1;
+}
+
+.DatePickerInput {
+    flex: 1;
+}
+
+.HiddenDatePicker {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: none;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.CalendarIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s ease;
+}
+
+.CalendarIcon:hover {
+    color: #1677ff;
+}
+
+.CalendarIconValid {
+    color: #52c41a;
+}
+
+.CalendarIconValid:hover {
+    color: #73d13d;
+}
+
+.CalendarIconInvalid {
+    color: #ff4d4f;
+}
+
+.Error {
+    font-size: 12px;
+    color: #ff4d4f;
+    padding-left: 4px;
+}
+
+.Preview {
+    font-size: 12px;
+    color: #52c41a;
+    padding-left: 4px;
+}
+
+.CalendarPopup {
+    z-index: 1050;
+}
