@@ -38,101 +38,154 @@ export const isRelativeDate = (text: string): boolean => {
  * Validates the relative date
  */
 export const isValidRelativeDate = (text: string): boolean => {
-    return parseRelativeDate(text.trim()) !== undefined;
+    return parseRelativeDate(text) !== null;
 };
 
 export interface ParseOptions {
-    roundUp?: boolean;
     timeZone?: TimeZone;
 }
 
-export function parseRelativeDate(text: string, options: ParseOptions = {}): DateTime | undefined {
-    if (!text) {
-        return undefined;
-    }
+export function parseRelativeDate(text: string, options: ParseOptions = {}): DateTime | null {
+    const EOT = '';
+    let pos = 0;
+    let ch: string = '';
 
-    const { roundUp, timeZone } = options;
-
-    let time: DateTime | undefined;
-    let mathString = '';
-
-    if (text.substring(0, 3) === 'now') {
-        time = DateTime.now({ timeZone });
-        mathString = text.substring('now'.length);
-    }
-
-    if (!time || !time.isValid()) {
-        return undefined;
-    }
-
-    if (!mathString.length) {
-        return time;
-    }
-
-    return parseDateMath(mathString, time, roundUp);
-}
-
-export function parseDateMath(mathString: string, time: DateTime, roundUp?: boolean): DateTime | undefined {
-    const strippedMathString = mathString.replace(/\s/g, '');
-    let resultTime = time;
-    let i = 0;
-    const len = strippedMathString.length;
-
-    while (i < len) {
-        const c = strippedMathString.charAt(i++);
-        let type;
-        let num;
-
-        if (c === '/') {
-            type = 0;
-        } else if (c === '+') {
-            type = 1;
-        } else if (c === '-') {
-            type = 2;
+    const nextChar = () => {
+        if (pos < text.length) {
+            ch = text[pos];
+            pos++;
         } else {
-            return undefined;
+            ch = EOT;
+        }
+    };
+
+    class ParseError extends Error {
+        pos: number;
+
+        constructor(message: string, pos: number) {
+            super(message);
+            this.pos = pos;
+        }
+    }
+
+    // Spaces =  {' ' | '\t'}
+    const skipSpaces = () => {
+        while (ch === ' ' || ch === '\t') {
+            nextChar();
+        }
+    };
+
+    const now = (): DateTime => {
+        if (ch === 'n' || ch === 'N') {
+            nextChar();
+        } else {
+            throw new ParseError('"n" expected', pos);
         }
 
-        if (isNaN(parseInt(strippedMathString.charAt(i), 10))) {
-            num = 1;
-        } else if (strippedMathString.length === 2) {
-            num = parseInt(strippedMathString.charAt(i), 10);
+        if ((ch as string) === 'o' || (ch as string) === 'O') {
+            nextChar();
         } else {
-            const numFrom = i;
-            while (!isNaN(parseInt(strippedMathString.charAt(i), 10))) {
-                i++;
-                if (i > 10) {
-                    return undefined;
+            throw new ParseError('"o" expected', pos);
+        }
+
+        if ((ch as string) === 'w' || (ch as string) === 'W') {
+            nextChar();
+        } else {
+            throw new ParseError('"w" expected', pos);
+        }
+
+        const { timeZone } = options;
+        return DateTime.now({ timeZone });
+    };
+
+    // OptionalInt = ['0'...'9'{'0'...'9'}]
+    const optionalInt = (): number => {
+        if ('0' <= ch && ch <= '9') {
+            const startPos = pos;
+            let num = Number(ch);
+            nextChar();
+
+            while ('0' <= ch && ch <= '9') {
+                num = num * 10 + Number(ch);
+
+                if (num > 1e9) {
+                    throw new ParseError('too big int', startPos);
                 }
-            }
-            num = parseInt(strippedMathString.substring(numFrom, i), 10);
-        }
 
-        if (type === 0) {
-            // rounding is only allowed on whole, single, units (eg M or 1M, not 0.5M or 2M)
-            if (num !== 1) {
-                return undefined;
+                nextChar();
             }
-        }
 
-        const unit = strippedMathString.charAt(i++) as TimeUnit;
+            return num;
+        } else {
+            return 1;
+        }
+    };
+
+    // Unit = 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'Q' | 'y'
+    const readUnit = (): TimeUnit => {
+        const unit = ch as TimeUnit;
 
         if (validUnits.has(unit)) {
-            if (type === 0) {
-                if (roundUp) {
-                    resultTime = resultTime.endOf(unit);
-                } else {
-                    resultTime = resultTime.startOf(unit);
-                }
-            } else if (type === 1) {
-                resultTime = resultTime.add(num, unit);
-            } else if (type === 2) {
-                resultTime = resultTime.subtract(num, unit);
-            }
+            nextChar();
+
+            return unit;
         } else {
-            return undefined;
+            throw new ParseError(`unexpected time unit, allowed: ${Array.from(validUnits).join(', ')}`, pos);
+        }
+    };
+
+    // RelativeDate = Spaces 'now' Spaces {('-' | '+' | '/') Spaces OptionalInt Spaces Unit Spaces}
+    const relativeDate = (): DateTime => {
+        skipSpaces();
+        let time = now();
+        skipSpaces();
+
+        while (ch === '-' || ch === '+' || ch === '/') {
+            const op = ch;
+
+            nextChar();
+            skipSpaces();
+
+            const numPos = pos;
+            const num = optionalInt();
+            skipSpaces();
+
+            const unit = readUnit();
+            skipSpaces();
+
+            if (op === '/') {
+                if (num !== 1) {
+                    throw new ParseError('number should be 1 or missing for operation "/"', numPos);
+                }
+
+                time = time.startOf(unit);
+            } else if (op === '+') {
+                time = time.add(num, unit);
+            } else if (op === '-') {
+                time = time.subtract(num, unit);
+            } else {
+                throw new ParseError(`internal error - unexpected operation ${op}`, pos);
+            }
+        }
+
+        return time;
+    };
+
+    try {
+        nextChar();
+        const ans = relativeDate();
+
+        if (ch !== EOT) {
+            throw new ParseError(`unexpected char ${ch}`, pos);
+        }
+
+        return ans;
+    } catch (e) {
+        if (e instanceof ParseError) {
+            console.error({ m: e.message, pos: e.pos - 1 });
+            return null;
+        } else {
+            throw e;
         }
     }
-
-    return resultTime;
 }

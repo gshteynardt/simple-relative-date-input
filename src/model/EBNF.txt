@@ -1,6 +1,6 @@
-RelativeDate = Spaces 'now' Spaces {('-' | '+' | '/') Spaces [Int Spaces] Unit Spaces}
-Spaces =  {' ' | '\t' | '\r' | '\n'}
-Int = '0'...'9'{'0'...'9'}
+RelativeDate = Spaces 'now' Spaces {('-' | '+' | '/') Spaces OptionalInt Spaces Unit Spaces}
+Spaces =  {' ' | '\t'}
+OptionalInt = ['0'...'9'{'0'...'9'}]
 Unit = 's' | 'm' | 'h' | 'd' | 'w' | 'M' | 'Q' | 'y'
 
 1. after division only int = 1 allowed including 001 - we agree
