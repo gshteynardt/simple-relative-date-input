@@ -6,16 +6,8 @@
     position: relative;
 }
 
-.FxButton {
-    flex-shrink: 0;
-}
-
 .Input {
-    flex: 1;
-}
-
-.DatePickerInput {
-    flex: 1;
+    width: 200px;
 }
 
 .HiddenDatePicker {
@@ -43,24 +35,6 @@
 
 .CalendarIcon:hover {
     color: #1677ff;
-}
-
-.CalendarIconValid {
-    color: #52c41a;
-}
-
-.CalendarIconValid:hover {
-    color: #73d13d;
-}
-
-.CalendarIconInvalid {
-    color: #ff4d4f;
-}
-
-.Error {
-    font-size: 12px;
-    color: #ff4d4f;
-    padding-left: 4px;
 }
 
 .Preview {

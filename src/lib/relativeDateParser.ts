@@ -1,51 +1,21 @@
-/**
- * Парсер относительных дат с поддержкой таймзон
- *
- * Примеры:
- *   now       - текущее время
- *   now-5m    - 5 минут назад
- *   now+1d    - завтра
- *   now/d     - начало дня
- *   now-1d/d  - начало вчерашнего дня
- *   now-1M/M  - начало прошлого месяца
- *   now+1d/d  - начало завтрашнего дня
- *   now+1M/M  - начало следующего месяца
- */
-
-import { DateTime } from './date-utils/dateTime';
-import type { TimeUnit } from './date-utils/dateTime';
-
-export type TimeZoneUtc = 'utc';
-
-export type TimeZoneBrowser = 'browser';
-
-export type TimeZone = TimeZoneBrowser | TimeZoneUtc | string;
-
-export interface TimeZoneOptions {
-    timeZone?: TimeZone;
-}
+import type { TimeUnit } from './date-utils/dateTime/dateTime';
+import type { DateTimeFactory, IDateTime, ParseOptions } from './date-utils/dateTime/types';
 
 const validUnits = new Set<string>(['s', 'm', 'h', 'd', 'w', 'M', 'Q', 'y']);
 
-/**
- * Checks if the string is a relative date (starts with "now")
- */
-export const isRelativeDate = (text: string): boolean => {
-    return text.trim().toLowerCase().startsWith('now');
+type DateParseResult = {
+    error: string | undefined;
+    errorPos: number | undefined;
+    ans: IDateTime | null;
 };
 
-/**
- * Validates the relative date
- */
-export const isValidRelativeDate = (text: string): boolean => {
-    return parseRelativeDate(text) !== null;
+type Props = {
+    text: string;
+    dateTime: DateTimeFactory;
+    options?: ParseOptions;
 };
 
-export interface ParseOptions {
-    timeZone?: TimeZone;
-}
-
-export function parseRelativeDate(text: string, options: ParseOptions = {}): DateTime | null {
+export function parseRelativeDate({ text, dateTime, options }: Props): DateParseResult {
     const EOT = '';
     let pos = 0;
     let ch: string = '';
@@ -75,27 +45,12 @@ export function parseRelativeDate(text: string, options: ParseOptions = {}): Dat
         }
     };
 
-    const now = (): DateTime => {
-        if (ch === 'n' || ch === 'N') {
+    const skipCh = (chLow: string, chUpp: string) => {
+        if (ch === chLow || ch === chUpp) {
             nextChar();
         } else {
-            throw new ParseError('"n" expected', pos);
+            throw new ParseError(`"${chLow}" or "${chUpp}" expected`, pos);
         }
-
-        if ((ch as string) === 'o' || (ch as string) === 'O') {
-            nextChar();
-        } else {
-            throw new ParseError('"o" expected', pos);
-        }
-
-        if ((ch as string) === 'w' || (ch as string) === 'W') {
-            nextChar();
-        } else {
-            throw new ParseError('"w" expected', pos);
-        }
-
-        const { timeZone } = options;
-        return DateTime.now({ timeZone });
     };
 
     // OptionalInt = ['0'...'9'{'0'...'9'}]
@@ -103,6 +58,7 @@ export function parseRelativeDate(text: string, options: ParseOptions = {}): Dat
         if ('0' <= ch && ch <= '9') {
             const startPos = pos;
             let num = Number(ch);
+
             nextChar();
 
             while ('0' <= ch && ch <= '9') {
@@ -135,9 +91,16 @@ export function parseRelativeDate(text: string, options: ParseOptions = {}): Dat
     };
 
     // RelativeDate = Spaces 'now' Spaces {('-' | '+' | '/') Spaces OptionalInt Spaces Unit Spaces}
-    const relativeDate = (): DateTime => {
+    const relativeDate = (): IDateTime => {
         skipSpaces();
-        let time = now();
+
+        skipCh('n', 'N');
+        skipCh('o', 'O');
+        skipCh('w', 'W');
+
+        const { timeZone } = options ?? {};
+        let time = dateTime.now({ timeZone }); // TODO allow writing unit tests
+
         skipSpaces();
 
         while (ch === '-' || ch === '+' || ch === '/') {
@@ -176,16 +139,17 @@ export function parseRelativeDate(text: string, options: ParseOptions = {}): Dat
         const ans = relativeDate();
 
         if (ch !== EOT) {
-            throw new ParseError(`unexpected char ${ch}`, pos);
+            throw new ParseError(`unexpected char "${ch}"`, pos - 1);
         }
 
-        return ans;
+        return { error: undefined, errorPos: undefined, ans };
     } catch (e) {
         if (e instanceof ParseError) {
-            console.error({ m: e.message, pos: e.pos - 1 });
-            return null;
+            return { error: e.message, errorPos: e.pos, ans: null };
         } else {
             throw e;
         }
     }
 }
+
+// TODO generate unit tests

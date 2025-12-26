@@ -3,7 +3,7 @@ import { DownOutlined } from '@ant-design/icons';
 
 import type { Preset } from '../../model/type';
 import css from './Presets.module.css';
-import { DEFAULT_PRESETS, DATE_PRESETS } from '../../utils/presets.ts';
+import { DEFAULT_PRESETS, DATE_PRESETS } from '../../lib/presets.ts';
 
 type Props = {
     open: boolean;

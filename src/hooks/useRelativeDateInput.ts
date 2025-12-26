@@ -1,16 +1,14 @@
 import { useCallback, useRef, useState } from 'react';
-import type { Dayjs } from 'dayjs';
 import type { InputRef } from 'antd';
 
-import type { Preset, Value } from '../model/type';
+import type { Preset } from '../model/type';
 
 type Props = {
-    setRelativeDate: (text: string) => void;
-    setDateValue: (value: Value | null) => void;
+    setRelativeText: (text: string) => void;
 };
 
 export const useRelativeDateInput = (props: Props) => {
-    const { setRelativeDate, setDateValue } = props;
+    const { setRelativeText } = props;
     const [isCalendarOpen, setCalendarOpen] = useState(false);
     const [isPresetsOpen, setPresetsOpen] = useState(false);
     const inputRef = useRef<InputRef>(null);
@@ -18,27 +16,18 @@ export const useRelativeDateInput = (props: Props) => {
 
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            setRelativeDate(e.target.value);
+            setRelativeText(e.target.value);
         },
-        [setRelativeDate],
-    );
-
-    const handleSelectDate = useCallback(
-        (date: Dayjs | null) => {
-            if (date) {
-                setDateValue({ type: 'absolute', value: date.toDate() });
-            }
-        },
-        [setDateValue],
+        [setRelativeText],
     );
 
     const handleSelectPreset = useCallback(
         (preset: Preset) => {
-            setRelativeDate(preset.value);
+            setRelativeText(preset.value);
             setPresetsOpen(false);
             inputRef.current?.focus();
         },
-        [setRelativeDate, setPresetsOpen],
+        [setRelativeText, setPresetsOpen],
     );
 
     const handleCalendarClick = useCallback(() => {
@@ -53,7 +42,6 @@ export const useRelativeDateInput = (props: Props) => {
         setCalendarOpen,
         setPresetsOpen,
         handleChange,
-        handleSelectDate,
         handleSelectPreset,
         handleCalendarClick,
     };

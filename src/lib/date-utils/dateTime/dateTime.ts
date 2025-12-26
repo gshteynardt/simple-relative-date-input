@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import type { IDateTime, DateTimeOptions, Input, IDateTimeFactory } from './types';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -25,16 +26,10 @@ const unitMap: Record<TimeUnit, dayjs.ManipulateType | 'quarter'> = {
     y: 'year',
 };
 
-export type DateTimeOptions = {
-    timeZone?: string;
-};
-
-type Input = Date | number | string | dayjs.Dayjs;
-
 /**
  * Immutable DateTime class with timezone support
  */
-export class DateTime {
+class DateTime implements IDateTime {
     private _date: dayjs.Dayjs;
     private _timeZone?: string;
 
@@ -49,20 +44,6 @@ export class DateTime {
         } else {
             this._date = timeZone ? dayjs(input).tz(timeZone) : dayjs(input);
         }
-    }
-
-    /**
-     * Creates DateTime from current moment
-     */
-    static now(options?: DateTimeOptions): DateTime {
-        return new DateTime(undefined, options);
-    }
-
-    /**
-     * Creates DateTime from Date
-     */
-    static fromDate(date: Date, options?: DateTimeOptions): DateTime {
-        return new DateTime(date, options);
     }
 
     /**
@@ -195,3 +176,15 @@ export class DateTime {
         return this._date.millisecond();
     }
 }
+
+class DateTimeFactory implements IDateTimeFactory {
+  now(options?: DateTimeOptions): DateTime {
+      return new DateTime(undefined, options);
+  }
+
+  fromDate(date: Date, options?: DateTimeOptions): DateTime {
+      return new DateTime(date, options);
+  }
+}
+
+export const dateTime = new DateTimeFactory();
