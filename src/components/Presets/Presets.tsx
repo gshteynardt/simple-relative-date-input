@@ -2,8 +2,9 @@ import { Button, Popover, Tabs } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
 import type { Preset } from '../../model/type';
+import { defaultPresets, datePresets } from '../../model/presets';
+
 import css from './Presets.module.css';
-import { DEFAULT_PRESETS, DATE_PRESETS } from '../../lib/presets.ts';
 
 type Props = {
     open: boolean;
@@ -34,12 +35,12 @@ export const Presets = (props: Props) => {
                     {
                         key: 'main',
                         label: 'Main',
-                        children: renderPresetList(DATE_PRESETS),
+                        children: renderPresetList(datePresets),
                     },
                     {
                         key: 'other',
                         label: 'Other',
-                        children: renderPresetList(DEFAULT_PRESETS),
+                        children: renderPresetList(defaultPresets),
                     },
                 ]}
             />

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 
-import { parseRelativeDate } from '../lib/relativeDateParser';
-import type { DateTimeFactory, IDateTime } from '../lib/date-utils/dateTime/types';
+import { parseRelativeDate } from '../lib/parseRelativeDate';
+import type { IDateTimeFactory, IDateTime } from '../lib/date-utils/dateTime/types';
 
 type SimpleRelativeDateState = {
     /** current relative text */
@@ -19,7 +19,7 @@ type SimpleRelativeDateState = {
 };
 
 type Props = {
-    dateTime: DateTimeFactory;
+    dateTime: IDateTimeFactory;
 };
 
 export const useSimpleRelativeDateState = (props: Props): SimpleRelativeDateState => {

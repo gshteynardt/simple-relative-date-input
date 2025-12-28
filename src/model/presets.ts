@@ -1,6 +1,6 @@
-import type { Preset } from '../model/type';
+import type { Preset } from './type';
 
-export const DEFAULT_PRESETS: Preset[] = [
+export const defaultPresets: Preset[] = [
     { id: 'now', title: 'Now', value: 'now' },
     { id: 'now-5m', title: 'Last 5 minutes', value: 'now-5m' },
     { id: 'now-15m', title: 'Last 15 minutes', value: 'now-15m' },
@@ -15,7 +15,7 @@ export const DEFAULT_PRESETS: Preset[] = [
     { id: 'now-1M', title: 'Last month', value: 'now-1M' },
 ];
 
-export const DATE_PRESETS: Preset[] = [
+export const datePresets: Preset[] = [
     { id: 'now/d', title: 'Start of today', value: 'now/d' },
     { id: 'now-1d/d', title: 'Start of yesterday', value: 'now-1d/d' },
     { id: 'now/w', title: 'Start of week', value: 'now/w' },

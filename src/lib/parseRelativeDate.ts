@@ -1,5 +1,5 @@
 import type { TimeUnit } from './date-utils/dateTime/dateTime';
-import type { DateTimeFactory, IDateTime, ParseOptions } from './date-utils/dateTime/types';
+import type { IDateTimeFactory, IDateTime, ParseOptions } from './date-utils/dateTime/types';
 
 const validUnits = new Set<string>(['s', 'm', 'h', 'd', 'w', 'M', 'Q', 'y']);
 
@@ -11,9 +11,18 @@ type DateParseResult = {
 
 type Props = {
     text: string;
-    dateTime: DateTimeFactory;
+    dateTime: IDateTimeFactory;
     options?: ParseOptions;
 };
+
+class ParseError extends Error {
+  pos: number;
+
+  constructor(message: string, pos: number) {
+      super(message);
+      this.pos = pos;
+  }
+}
 
 export function parseRelativeDate({ text, dateTime, options }: Props): DateParseResult {
     const EOT = '';
@@ -28,15 +37,6 @@ export function parseRelativeDate({ text, dateTime, options }: Props): DateParse
             ch = EOT;
         }
     };
-
-    class ParseError extends Error {
-        pos: number;
-
-        constructor(message: string, pos: number) {
-            super(message);
-            this.pos = pos;
-        }
-    }
 
     // Spaces =  {' ' | '\t'}
     const skipSpaces = () => {
@@ -99,7 +99,7 @@ export function parseRelativeDate({ text, dateTime, options }: Props): DateParse
         skipCh('w', 'W');
 
         const { timeZone } = options ?? {};
-        let time = dateTime.now({ timeZone }); // TODO allow writing unit tests
+        let time = dateTime.now({ timeZone });
 
         skipSpaces();
 
@@ -151,5 +151,3 @@ export function parseRelativeDate({ text, dateTime, options }: Props): DateParse
         }
     }
 }
-
-// TODO generate unit tests
