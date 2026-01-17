@@ -3,6 +3,7 @@
   color: var(--color-error);
   padding-left: var(--space-xs);
   font-family: monospace;
+  max-width: 320px;
 }
 
 .ErrorMessage {
@@ -10,7 +11,8 @@
 }
 
 .ErrorText {
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .Cursor {
