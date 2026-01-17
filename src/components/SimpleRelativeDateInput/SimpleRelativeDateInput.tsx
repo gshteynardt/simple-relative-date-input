@@ -1,5 +1,5 @@
 import { useSimpleRelativeDateState } from '../../hooks/useSimpleRelativeDateState';
-import { RelativeDateInput } from '../RelativeDateInput/RelativeDateInput';
+import { RelativeDate } from '../RelativeDate/RelativeDate';
 import { dateTime } from '../../lib/date-utils/dateTime/dateTime';
 
 export const SimpleRelativeDateInput = () => {
@@ -7,7 +7,7 @@ export const SimpleRelativeDateInput = () => {
     const { relativeText, setRelativeText, parsedDate, isValid, errorMessage, errorPosition } = state;
 
     return (
-        <RelativeDateInput
+        <RelativeDate
             relativeText={relativeText}
             parsedDate={parsedDate}
             isValid={isValid}

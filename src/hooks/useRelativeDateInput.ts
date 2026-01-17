@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from 'react';
-import type { InputRef } from 'antd';
 
 import type { Preset } from '../model/type';
 
@@ -9,9 +8,8 @@ type Props = {
 
 export const useRelativeDateInput = (props: Props) => {
     const { setRelativeText } = props;
-    const [isCalendarOpen, setCalendarOpen] = useState(false);
     const [isPresetsOpen, setPresetsOpen] = useState(false);
-    const inputRef = useRef<InputRef>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleChange = useCallback(
@@ -30,19 +28,12 @@ export const useRelativeDateInput = (props: Props) => {
         [setRelativeText, setPresetsOpen],
     );
 
-    const handleCalendarClick = useCallback(() => {
-        setCalendarOpen((prev) => !prev);
-    }, []);
-
     return {
-        isCalendarOpen,
         isPresetsOpen,
         inputRef,
         containerRef,
-        setCalendarOpen,
         setPresetsOpen,
         handleChange,
         handleSelectPreset,
-        handleCalendarClick,
     };
 };

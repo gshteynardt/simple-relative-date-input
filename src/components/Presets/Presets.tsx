@@ -1,5 +1,5 @@
-import { Button, Popover, Tabs } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import * as Popover from '@radix-ui/react-popover';
+import * as Tabs from '@radix-ui/react-tabs';
 
 import type { Preset } from '../../model/type';
 import { defaultPresets, datePresets } from '../../model/presets';
@@ -26,39 +26,42 @@ export const Presets = (props: Props) => {
         </div>
     );
 
-    const dropdownContent = (
-        <div className={css.DropdownContent}>
-            <Tabs
-                defaultActiveKey="main"
-                size="small"
-                items={[
-                    {
-                        key: 'main',
-                        label: 'Main',
-                        children: renderPresetList(datePresets),
-                    },
-                    {
-                        key: 'other',
-                        label: 'Other',
-                        children: renderPresetList(defaultPresets),
-                    },
-                ]}
-            />
-        </div>
-    );
-
     return (
-        <Popover
-            open={open}
-            onOpenChange={onOpen}
-            content={dropdownContent}
-            trigger={['click']}
-            placement="bottomLeft"
-            arrow={false}
-        >
-            <Button className={css.PresetsButton}>
-                Presets <DownOutlined className={css.Chevron} />
-            </Button>
-        </Popover>
+        <Popover.Root open={open} onOpenChange={onOpen}>
+            <Popover.Trigger asChild>
+                <button className={css.PresetsButton}>
+                    Presets
+                    <svg
+                        className={css.Chevron}
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="currentColor"
+                    >
+                        <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    </svg>
+                </button>
+            </Popover.Trigger>
+            <Popover.Portal>
+                <Popover.Content className={css.PopoverContent} sideOffset={4} align="start">
+                    <Tabs.Root defaultValue="main">
+                        <Tabs.List className={css.TabsList}>
+                            <Tabs.Trigger className={css.TabTrigger} value="main">
+                                Main
+                            </Tabs.Trigger>
+                            <Tabs.Trigger className={css.TabTrigger} value="other">
+                                Other
+                            </Tabs.Trigger>
+                        </Tabs.List>
+                        <Tabs.Content value="main">
+                            {renderPresetList(datePresets)}
+                        </Tabs.Content>
+                        <Tabs.Content value="other">
+                            {renderPresetList(defaultPresets)}
+                        </Tabs.Content>
+                    </Tabs.Root>
+                </Popover.Content>
+            </Popover.Portal>
+        </Popover.Root>
     );
 };

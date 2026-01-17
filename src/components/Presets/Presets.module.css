@@ -1,3 +1,84 @@
+.PresetsButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.PresetsButton:hover {
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-hover);
+}
+
+.PresetsButton:focus {
+    outline: none;
+    border-color: var(--color-primary-hover);
+    box-shadow: 0 0 0 2px var(--color-primary-shadow);
+}
+
+.Chevron {
+    transition: transform var(--transition-normal);
+}
+
+.PopoverContent {
+    min-width: 280px;
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-popover);
+    padding: var(--space-lg);
+    z-index: 1000;
+    animation: slideDown var(--transition-fast);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.TabsList {
+    display: flex;
+    gap: var(--space-xs);
+    border-bottom: 1px solid var(--color-border-light);
+    margin-bottom: var(--space-md);
+}
+
+.TabTrigger {
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+    color: var(--color-text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: -1px;
+}
+
+.TabTrigger:hover {
+    color: var(--color-primary);
+}
+
+.TabTrigger[data-state='active'] {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
 .PresetsList {
     display: flex;
     flex-direction: column;
@@ -9,37 +90,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    padding: 8px 12px;
+    gap: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
     cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.15s ease;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast);
 }
 
 .PresetItem:hover {
-    background-color: rgba(22, 119, 255, 0.06);
+    background-color: var(--color-bg-hover);
 }
 
 .PresetTitle {
-    font-size: 14px;
-    color: #262626;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
 }
 
 .PresetValue {
-    font-size: 12px;
-    color: #8c8c8c;
-    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
-}
-
-.PresetsButton {
-    flex-shrink: 0;
-}
-
-.Chevron {
-    font-size: 10px !important;
-    transition: transform 0.2s ease;
-}
-
-.DropdownContent {
-    min-width: 240px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
 }
