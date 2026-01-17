@@ -2,7 +2,6 @@ import { DayPicker } from 'react-day-picker';
 
 import cn from 'classnames';
 
-import { Presets } from '../Presets/Presets';
 import { Error } from '../Error/Error';
 import { RelativeDateInput } from '../RelativeDateInput/RelativeDateInput';
 import { useRelativeDateInput } from '../../hooks/useRelativeDateInput';
